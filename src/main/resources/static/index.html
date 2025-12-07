@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stack & Queue Visual Playground</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .panel h2 {
+            color: #1e293b;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .controls input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .controls input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .controls button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .controls button:hover {
+            transform: translateY(-2px);
+        }
+
+        .controls button:active {
+            transform: translateY(0);
+        }
+
+        .info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #475569;
+            min-height: 60px;
+        }
+
+        .array-container {
+            margin: 20px 0;
+        }
+
+        .array-label {
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .array-viz {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            padding: 20px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            min-height: 100px;
+            align-items: flex-end;
+        }
+
+        .array-cell {
+            width: 70px;
+            height: 70px;
+            border: 3px solid #334155;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            position: relative;
+            animation: cellPop 0.3s ease;
+        }
+
+        .array-cell.empty {
+            border-style: dashed;
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+
+        .array-cell.highlighted {
+            border-color: #ef4444;
+            background: #fee2e2;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+        }
+
+        .array-index {
+            position: absolute;
+            top: -25px;
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .array-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .array-pointer {
+            position: absolute;
+            bottom: -30px;
+            font-size: 0.7rem;
+            color: #ef4444;
+            font-weight: 600;
+            background: #fee2e2;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .linkedlist-viz {
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
+            border-radius: 12px;
+            min-height: 150px;
+            overflow-x: auto;
+        }
+
+        .node-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: nowrap;
+        }
+
+        .node {
+            display: flex;
+            align-items: center;
+            animation: nodePop 0.4s ease;
+        }
+
+        .node-box {
+            background: white;
+            border: 3px solid #8b5cf6;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+            position: relative;
+        }
+
+        .node-data {
+            min-width: 60px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .node-next {
+            width: 40px;
+            height: 40px;
+            border-left: 2px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b5cf6;
+            font-weight: 600;
+        }
+
+        .arrow {
+            color: #8b5cf6;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .null-indicator {
+            background: #fecaca;
+            border: 2px dashed #ef4444;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .head-label, .tail-label {
+            position: absolute;
+            top: -30px;
+            background: #8b5cf6;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .tail-label {
+            right: 0;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        @keyframes cellPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes nodePop {
+            0% { transform: translateX(-20px); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #059669;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🎯 Stack & Queue Visual Playground</h1>
+
+<div class="container">
+
+    <!-- ARRAY STACK -->
+    <div class="panel">
+        <h2>📚 Array-Based Stack</h2>
+        <div class="controls">
+            <input id="stackArrayValue" type="number" placeholder="Enter value" />
+            <button onclick="pushStack('array')">Push</button>
+            <button onclick="popStack('array')">Pop</button>
+            <button onclick="loadStackState('array')">Refresh</button>
+        </div>
+        <div class="info" id="stackArrayInfo">Loading...</div>
+        <div id="stackArrayMessage"></div>
+
+        <div class="array-container">
+            <div class="array-label">Array Visualization (Top → Right)</div>
+            <div class="array-viz" id="stackArrayViz"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box" style="border: 3px solid #334155; background: white;"></div>
+                    <span>Filled</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="border: 3px dashed #cbd5e1; background: #f1f5f9;"></div>
+                    <span>Empty</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="border: 3px solid #ef4444; background: #fee2e2;"></div>
+                    <span>Top Pointer</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LINKED LIST STACK -->
+    <div class="panel">
+        <h2>🔗 Linked List Stack</h2>
+        <div class="controls">
+            <input id="stackLinkedValue" type="number" placeholder="Enter value" />
+            <button onclick="pushStack('linked')">Push</button>
+            <button onclick="popStack('linked')">Pop</button>
+            <button onclick="loadStackState('linked')">Refresh</button>
+        </div>
+        <div class="info" id="stackLinkedInfo">Loading...</div>
+        <div id="stackLinkedMessage"></div>
+
+        <div class="array-container">
+            <div class="array-label">Linked List Visualization (Head → Left, Top of Stack)</div>
+            <div class="linkedlist-viz" id="stackLinkedViz"></div>
+        </div>
+    </div>
+
+    <!-- ARRAY QUEUE -->
+    <div class="panel">
+        <h2>📋 Array-Based Queue (Circular)</h2>
+        <div class="controls">
+            <input id="queueArrayValue" type="number" placeholder="Enter value" />
+            <button onclick="enqueueQueue('array')">Enqueue</button>
+            <button onclick="dequeueQueue('array')">Dequeue</button>
+            <button onclick="loadQueueState('array')">Refresh</button>
+        </div>
+        <div class="info" id="queueArrayInfo">Loading...</div>
+        <div id="queueArrayMessage"></div>
+
+        <div class="array-container">
+            <div class="array-label">Circular Array (Front → Rear)</div>
+            <div class="array-viz" id="queueArrayViz"></div>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-box" style="border: 3px solid #334155; background: white;"></div>
+                    <span>Filled</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box" style="border: 3px dashed #cbd5e1; background: #f1f5f9;"></div>
+                    <span>Empty</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LINKED LIST QUEUE -->
+    <div class="panel">
+        <h2>🔗 Linked List Queue</h2>
+        <div class="controls">
+            <input id="queueLinkedValue" type="number" placeholder="Enter value" />
+            <button onclick="enqueueQueue('linked')">Enqueue</button>
+            <button onclick="dequeueQueue('linked')">Dequeue</button>
+            <button onclick="loadQueueState('linked')">Refresh</button>
+        </div>
+        <div class="info" id="queueLinkedInfo">Loading...</div>
+        <div id="queueLinkedMessage"></div>
+
+        <div class="array-container">
+            <div class="array-label">Linked List (Front → Rear)</div>
+            <div class="linkedlist-viz" id="queueLinkedViz"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const BASE_URL = '/api';
+
+    function mapImpl(impl) {
+        return impl === 'array' ? 'array' : 'linkedlist';
+    }
+
+    function showMessage(messageId, text, isError = false) {
+        const msgEl = document.getElementById(messageId);
+        msgEl.className = isError ? 'error-message' : 'success-message';
+        msgEl.textContent = text;
+        setTimeout(() => {
+            msgEl.textContent = '';
+            msgEl.className = '';
+        }, 3000);
+    }
+
+    function renderArrayVisualization(state, vizId) {
+        const vizEl = document.getElementById(vizId);
+        vizEl.innerHTML = '';
+
+        const capacity = state.capacity || 10;
+        const topIndex = state.topIndex;
+        const frontIndex = state.frontIndex;
+        const rearIndex = state.rearIndex;
+
+        // Use fullArray for queue, elements for stack
+        let displayArray = [];
+        if (state.type === 'QUEUE' && state.fullArray) {
+            displayArray = state.fullArray;
+        } else if (state.elements) {
+            displayArray = state.elements;
+        }
+
+        console.log('Rendering array:', {
+            type: state.type,
+            capacity,
+            displayArray,
+            topIndex,
+            frontIndex,
+            rearIndex
+        });
+
+        // Create array cells
+        for (let i = 0; i < capacity; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'array-cell';
+
+            // Index label
+            const indexLabel = document.createElement('div');
+            indexLabel.className = 'array-index';
+            indexLabel.textContent = `[${i}]`;
+            cell.appendChild(indexLabel);
+
+            // Check if this cell has a value
+            let hasValue = false;
+            let cellValue = null;
+
+            if (state.type === 'QUEUE' && state.fullArray) {
+                // For queue, use fullArray
+                hasValue = displayArray[i] !== null && displayArray[i] !== undefined;
+                cellValue = displayArray[i];
+            } else {
+                // For stack, elements array is in order
+                hasValue = i < displayArray.length;
+                cellValue = displayArray[i];
+            }
+
+            if (hasValue) {
+                const value = document.createElement('div');
+                value.className = 'array-value';
+                value.textContent = cellValue;
+                cell.appendChild(value);
+            } else {
+                cell.classList.add('empty');
+            }
+
+            // Highlight pointers
+            if (topIndex !== null && topIndex !== undefined && i === topIndex) {
+                cell.classList.add('highlighted');
+                const pointer = document.createElement('div');
+                pointer.className = 'array-pointer';
+                pointer.textContent = 'TOP';
+                cell.appendChild(pointer);
+            }
+
+            if (frontIndex !== null && frontIndex !== undefined && i === frontIndex) {
+                cell.classList.add('highlighted');
+                const pointer = document.createElement('div');
+                pointer.className = 'array-pointer';
+                pointer.textContent = 'FRONT';
+                cell.appendChild(pointer);
+            }
+
+            if (rearIndex !== null && rearIndex !== undefined && i === rearIndex) {
+                cell.classList.add('highlighted');
+                const pointer = document.createElement('div');
+                pointer.className = 'array-pointer';
+                pointer.textContent = 'REAR';
+                cell.appendChild(pointer);
+            }
+
+            vizEl.appendChild(cell);
+        }
+    }
+
+    function renderLinkedListVisualization(state, vizId) {
+        const vizEl = document.getElementById(vizId);
+        vizEl.innerHTML = '';
+
+        const container = document.createElement('div');
+        container.className = 'node-container';
+
+        const elements = state.elements || [];
+
+        console.log('Rendering linked list:', elements);
+
+        if (elements.length === 0) {
+            const nullDiv = document.createElement('div');
+            nullDiv.className = 'null-indicator';
+            nullDiv.textContent = 'NULL / Empty';
+            container.appendChild(nullDiv);
+        } else {
+            elements.forEach((value, index) => {
+                const nodeDiv = document.createElement('div');
+                nodeDiv.className = 'node';
+
+                const nodeBox = document.createElement('div');
+                nodeBox.className = 'node-box';
+
+                // Add head label to first node
+                if (index === 0) {
+                    const headLabel = document.createElement('div');
+                    headLabel.className = 'head-label';
+                    headLabel.textContent = 'HEAD';
+                    nodeBox.appendChild(headLabel);
+                }
+
+                // Add tail label to last node
+                if (index === elements.length - 1) {
+                    const tailLabel = document.createElement('div');
+                    tailLabel.className = 'tail-label';
+                    tailLabel.textContent = 'TAIL';
+                    nodeBox.appendChild(tailLabel);
+                }
+
+                const dataDiv = document.createElement('div');
+                dataDiv.className = 'node-data';
+                dataDiv.textContent = value;
+                nodeBox.appendChild(dataDiv);
+
+                const nextDiv = document.createElement('div');
+                nextDiv.className = 'node-next';
+                nextDiv.textContent = '→';
+                nodeBox.appendChild(nextDiv);
+
+                nodeDiv.appendChild(nodeBox);
+                container.appendChild(nodeDiv);
+
+                // Add arrow between nodes
+                if (index < elements.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow';
+                    arrow.textContent = '→';
+                    container.appendChild(arrow);
+                }
+            });
+
+            // Add NULL at the end
+            const nullDiv = document.createElement('div');
+            nullDiv.className = 'null-indicator';
+            nullDiv.textContent = 'NULL';
+            container.appendChild(nullDiv);
+        }
+
+        vizEl.appendChild(container);
+    }
+
+    function renderStructureState(state, infoElementId, vizElementId, messageId, isArray) {
+        const infoEl = document.getElementById(infoElementId);
+
+        console.log('Received state:', state);
+
+        infoEl.textContent = `Type: ${state.type}
+    Implementation: ${state.impl}
+    Size: ${state.size}
+    Capacity: ${state.capacity ?? 'Dynamic'}
+    Top Index: ${state.topIndex ?? '-'}
+    Front Index: ${state.frontIndex ?? '-'}
+    Rear Index: ${state.rearIndex ?? '-'}
+    Last Operation: ${state.lastOperation ?? '-'}`;
+
+        if (state.message) {
+            showMessage(messageId, state.message, state.message.includes('flow') || state.message.includes('empty'));
+        }
+
+        if (isArray) {
+            renderArrayVisualization(state, vizElementId);
+        } else {
+            renderLinkedListVisualization(state, vizElementId);
+        }
+    }
+
+    // ---------- STACK ----------
+
+    async function pushStack(impl) {
+        const inputId = impl === 'array' ? 'stackArrayValue' : 'stackLinkedValue';
+        const infoId = impl === 'array' ? 'stackArrayInfo' : 'stackLinkedInfo';
+        const vizId = impl === 'array' ? 'stackArrayViz' : 'stackLinkedViz';
+        const messageId = impl === 'array' ? 'stackArrayMessage' : 'stackLinkedMessage';
+
+        const val = document.getElementById(inputId).value;
+        if (val === '') {
+            showMessage(messageId, 'Please enter a value', true);
+            return;
+        }
+
+        const mappedImpl = mapImpl(impl);
+
+        try {
+            const res = await fetch(`${BASE_URL}/stack/${mappedImpl}/push?value=${encodeURIComponent(val)}`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+            console.log('Push response:', data);
+            renderStructureState(data, infoId, vizId, messageId, impl === 'array');
+            document.getElementById(inputId).value = '';
+        } catch (error) {
+            console.error('Error pushing to stack:', error);
+            showMessage(messageId, 'Error: ' + error.message, true);
+        }
+    }
+
+    async function popStack(impl) {
+        const infoId = impl === 'array' ? 'stackArrayInfo' : 'stackLinkedInfo';
+        const vizId = impl === 'array' ? 'stackArrayViz' : 'stackLinkedViz';
+        const messageId = impl === 'array' ? 'stackArrayMessage' : 'stackLinkedMessage';
+
+        const mappedImpl = mapImpl(impl);
+
+        try {
+            const res = await fetch(`${BASE_URL}/stack/${mappedImpl}/pop`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+            console.log('Pop response:', data);
+            renderStructureState(data, infoId, vizId, messageId, impl === 'array');
+        } catch (error) {
+            console.error('Error popping from stack:', error);
+            showMessage(messageId, 'Error: ' + error.message, true);
+        }
+    }
+
+    async function loadStackState(impl) {
+        const infoId = impl === 'array' ? 'stackArrayInfo' : 'stackLinkedInfo';
+        const vizId = impl === 'array' ? 'stackArrayViz' : 'stackLinkedViz';
+        const messageId = impl === 'array' ? 'stackArrayMessage' : 'stackLinkedMessage';
+
+        const mappedImpl = mapImpl(impl);
+
+        try {
+            const res = await fetch(`${BASE_URL}/stack/${mappedImpl}/state`);
+            const data = await res.json();
+            console.log('Load stack state:', data);
+            renderStructureState(data, infoId, vizId, messageId, impl === 'array');
+        } catch (error) {
+            console.error('Error loading stack state:', error);
+            showMessage(messageId, 'Error: ' + error.message, true);
+        }
+    }
+
+    // ---------- QUEUE ----------
+
+    async function enqueueQueue(impl) {
+        const inputId = impl === 'array' ? 'queueArrayValue' : 'queueLinkedValue';
+        const infoId = impl === 'array' ? 'queueArrayInfo' : 'queueLinkedInfo';
+        const vizId = impl === 'array' ? 'queueArrayViz' : 'queueLinkedViz';
+        const messageId = impl === 'array' ? 'queueArrayMessage' : 'queueLinkedMessage';
+
+        const val = document.getElementById(inputId).value;
+        if (val === '') {
+            showMessage(messageId, 'Please enter a value', true);
+            return;
+        }
+
+        const mappedImpl = mapImpl(impl);
+
+        try {
+            const res = await fetch(`${BASE_URL}/queue/${mappedImpl}/enqueue?value=${encodeURIComponent(val)}`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+            console.log('Enqueue response:', data);
+            renderStructureState(data, infoId, vizId, messageId, impl === 'array');
+            document.getElementById(inputId).value = '';
+        } catch (error) {
+            console.error('Error enqueueing:', error);
+            showMessage(messageId, 'Error: ' + error.message, true);
+        }
+    }
+
+    async function dequeueQueue(impl) {
+        const infoId = impl === 'array' ? 'queueArrayInfo' : 'queueLinkedInfo';
+        const vizId = impl === 'array' ? 'queueArrayViz' : 'queueLinkedViz';
+        const messageId = impl === 'array' ? 'queueArrayMessage' : 'queueLinkedMessage';
+
+        const mappedImpl = mapImpl(impl);
+
+        try {
+            const res = await fetch(`${BASE_URL}/queue/${mappedImpl}/dequeue`, {
+                method: 'POST'
+            });
+            const data = await res.json();
+            console.log('Dequeue response:', data);
+            renderStructureState(data, infoId, vizId, messageId, impl === 'array');
+        } catch (error) {
+            console.error('Error dequeueing:', error);
+            showMessage(messageId, 'Error: ' + error.message, true);
+        }
+    }
+
+    async function loadQueueState(impl) {
+        const infoId = impl === 'array' ? 'queueArrayInfo' : 'queueLinkedInfo';
+        const vizId = impl === 'array' ? 'queueArrayViz' : 'queueLinkedViz';
+        const messageId = impl === 'array' ? 'queueArrayMessage' : 'queueLinkedMessage';
+
+        const mappedImpl = mapImpl(impl);
+
+        try {
+            const res = await fetch(`${BASE_URL}/queue/${mappedImpl}/state`);
+            const data = await res.json();
+            console.log('Load queue state:', data);
+            renderStructureState(data, infoId, vizId, messageId, impl === 'array');
+        } catch (error) {
+            console.error('Error loading queue state:', error);
+            showMessage(messageId, 'Error: ' + error.message, true);
+        }
+    }
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', () => {
+        console.log('Page loaded, fetching initial states...');
+        loadStackState('array');
+        loadStackState('linked');
+        loadQueueState('array');
+        loadQueueState('linked');
+    });
+</script>
+
+</body>
+</html>
